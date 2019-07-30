@@ -1,7 +1,7 @@
 module DatePicker exposing
     ( Msg, DateEvent(..), InputError(..), DatePicker
     , init, initFromDate, initFromDates, update, view, isOpen, focusedDate
-    , Settings, defaultSettings, pick, between, moreOrLess, from, to, off, open, close
+    , Settings, defaultSettings, initialDate, pick, between, moreOrLess, from, to, off, open, close
     )
 
 {-| A customizable date picker component.
@@ -279,6 +279,12 @@ isOpen (DatePicker model) =
 focusedDate : DatePicker -> Maybe Date
 focusedDate (DatePicker model) =
     model.focused
+
+{-| Expose the initial date
+-}
+initialDate : DatePicker -> Date
+initialDate (DatePicker model) =
+    model.today
 
 
 {-| The event resulting from a `DatePicker.update`.
