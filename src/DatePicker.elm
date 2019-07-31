@@ -1,7 +1,7 @@
 module DatePicker exposing
     ( Msg, DateEvent(..), InputError(..), DatePicker
     , init, initFromDate, initFromDates, update, view, isOpen, focusedDate
-    , Settings, defaultSettings, initialDate, pick, between, moreOrLess, from, to, off, open, close
+    , Settings, defaultSettings, getInitialDate, pick, between, moreOrLess, from, to, off, open, close
     )
 
 {-| A customizable date picker component.
@@ -281,9 +281,14 @@ focusedDate (DatePicker model) =
     model.focused
 
 {-| Expose the initial date
+
+When you initialize the DatePicker using function init : ( DatePicker, Cmd Msg ) by under the table the command Task.perform CurrentDate Date.today is executed to get today Date.
+
+In some scenarios, you want use this date to do some logic to isDisabled, so using this function you can get the today date.
+
 -}
-initialDate : DatePicker -> Date
-initialDate (DatePicker model) =
+getInitialDate : DatePicker -> Date
+getInitialDate (DatePicker model) =
     model.today
 
 

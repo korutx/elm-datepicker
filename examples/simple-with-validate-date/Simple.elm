@@ -2,7 +2,7 @@ module Simple exposing (main)
 
 import Browser
 import Date exposing (Date, compare, day, month, weekday, year)
-import DatePicker exposing (DateEvent(..), defaultSettings, initialDate)
+import DatePicker exposing (DateEvent(..), defaultSettings, getInitialDate)
 import Html exposing (Html, div, h1, text)
 import Time exposing (Weekday(..))
 
@@ -24,7 +24,7 @@ settings datePicker =
         isDisabled initialDateFromDatePicker date = 
             List.member (compare initialDateFromDatePicker date) [EQ, GT]
     in
-    { defaultSettings | isDisabled = (isDisabled (initialDate datePicker)) }
+    { defaultSettings | isDisabled = (isDisabled (getInitialDate datePicker)) }
 
 
 init : ( Model, Cmd Msg )
