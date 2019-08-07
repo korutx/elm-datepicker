@@ -282,9 +282,13 @@ focusedDate (DatePicker model) =
 
 {-| Expose the initial date
 
-When you initialize the DatePicker using function init : ( DatePicker, Cmd Msg ) by under the table the command Task.perform CurrentDate Date.today is executed to get today Date.
+When you initialize the DatePicker using function `init` the resulting `Cmd Msg` fetches todays date.
+This date is then stored in the DatePicker's model as initial date.
 
-In some scenarios, you want use this date to do some logic to isDisabled, so using this function you can get the today date.
+In some scenarios, you want use todays date in combination with `DatePicker.Settings`.
+This allows you to use todays date without storing it yourself.
+
+Check the `simple-with-validate-date` example for an example usage.
 
 -}
 getInitialDate : DatePicker -> Date

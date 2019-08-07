@@ -1,4 +1,4 @@
-module Simple exposing (main)
+module SimpleWithValidate exposing (main)
 
 import Browser
 import Date exposing (Date, compare, day, month, weekday, year)
@@ -21,10 +21,10 @@ settings :DatePicker.DatePicker -> DatePicker.Settings
 settings datePicker =
     let
         isDisabled : Date -> Date -> Bool
-        isDisabled initialDateFromDatePicker date = 
-            List.member (compare initialDateFromDatePicker date) [EQ, GT]
+        isDisabled today date =
+            compare today date /= LT
     in
-    { defaultSettings | isDisabled = (isDisabled (getInitialDate datePicker)) }
+    { defaultSettings | isDisabled = isDisabled (getInitialDate datePicker) }
 
 
 init : ( Model, Cmd Msg )
