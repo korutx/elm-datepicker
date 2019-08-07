@@ -96,7 +96,7 @@ module.exports = {
         client.sendKeys(textInputSelector, "1980-01-01a");
         client.sendKeys(textInputSelector, client.Keys.ENTER);
         client.expect.element(errorMsgSelector).to.be.present.before(defaultWait);
-        client.expect.element(errorMsgSelector).text.to.contain("Parser error: String is not in IS0 8601 date format").before(defaultWait);
+        client.expect.element(errorMsgSelector).text.to.contain("Parser error: Expected a date only").before(defaultWait);
         client.click(topLeftDaySelector);
         client.expect.element(textInputSelector).value.to.equal("1969/06/29").before(defaultWait);
         client.expect.element(errorMsgSelector).to.not.be.present.before(defaultWait);
