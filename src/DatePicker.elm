@@ -10,7 +10,7 @@ module DatePicker exposing
 # Tea ☕
 
 @docs Msg, DateEvent, InputError, DatePicker
-@docs init, initFromDate, initFromDates, update, view, isOpen, focusedDate
+@docs init, initFromDate, initFromDates, update, view, isOpen, focusedDate, getInitialDate
 
 
 # Settings
