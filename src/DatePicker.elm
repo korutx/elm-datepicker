@@ -1,7 +1,7 @@
 module DatePicker exposing
     ( Msg, DateEvent(..), InputError(..), DatePicker
-    , init, initFromDate, initFromDates, update, view, isOpen, focusedDate
-    , Settings, defaultSettings, getInitialDate, pick, between, moreOrLess, from, to, off, open, close
+    , init, initFromDate, initFromDates, update, view, isOpen, focusedDate, getInitialDate
+    , Settings, defaultSettings, pick, between, moreOrLess, from, to, off, open, close
     )
 
 {-| A customizable date picker component.
@@ -280,6 +280,7 @@ focusedDate : DatePicker -> Maybe Date
 focusedDate (DatePicker model) =
     model.focused
 
+
 {-| Expose the initial date
 
 When you initialize the DatePicker using function `init` the resulting `Cmd Msg` fetches todays date.
@@ -322,6 +323,7 @@ type DateEvent
 -}
 type InputError
     = Invalid String
+    | EmptyString
     | Disabled Date
 
 
@@ -358,16 +360,22 @@ update settings msg (DatePicker ({ forceOpen, focused } as model)) =
                 False ->
                     let
                         dateEvent =
-                            case settings.parser <| Maybe.withDefault "" model.inputText of
-                                Ok date ->
-                                    if settings.isDisabled date then
-                                        FailedInput <| Disabled date
+                            case Maybe.withDefault "" model.inputText of
+                                "" ->
+                                    FailedInput <| EmptyString
 
-                                    else
-                                        Picked date
+                                rawInput ->
+                                    case settings.parser rawInput of
+                                        Ok date ->
+                                            if settings.isDisabled date then
+                                                FailedInput <| Disabled date
 
-                                Err e ->
-                                    FailedInput <| Invalid e
+                                            else
+                                                Picked date
+
+                                        Err e ->
+
+                                                FailedInput <| Invalid e
                     in
                     ( DatePicker
                         { model
