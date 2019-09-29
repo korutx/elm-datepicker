@@ -1,12 +1,12 @@
 const url = "http://localhost:8000/examples/simple-nightwatch/index.html";
 const textInputSelector = ".elm-datepicker--input";
 const topLeftDaySelector = ".elm-datepicker--row:first-child .elm-datepicker--day:first-child";
-const errorMsgSelector = "#error"
-const openBtn = "#openpickerbtn"
-const closeBtn = "#closepickerbtn"
-const nextMonthBtn = ".elm-datepicker--next"
-const prevMonthBtn = ".elm-datepicker--prev"
-const monthDiv = ".elm-datepicker--month"
+const errorMsgSelector = "#error";
+const openBtn = "#openpickerbtn";
+const closeBtn = "#closepickerbtn";
+const nextMonthBtn = ".elm-datepicker--next";
+const prevMonthBtn = ".elm-datepicker--prev";
+const monthDiv = ".elm-datepicker--month";
 
 const defaultWait = 1000;
 
@@ -21,7 +21,7 @@ module.exports = {
         client.expect.element(monthDiv).text.to.contain("August");
         client.expect.element(topLeftDaySelector).to.be.present.before(defaultWait);
         client.click(topLeftDaySelector);
-        client.expect.element(textInputSelector).value.to.equal("1969/07/27").before(defaultWait);
+        client.expect.element(textInputSelector).value.to.equal("1969-07-27").before(defaultWait);
 
     },
 
@@ -34,7 +34,7 @@ module.exports = {
         client.expect.element(monthDiv).text.to.contain("June");
         client.expect.element(topLeftDaySelector).to.be.present.before(defaultWait);
         client.click(topLeftDaySelector);
-        client.expect.element(textInputSelector).value.to.equal("1969/06/01").before(defaultWait);
+        client.expect.element(textInputSelector).value.to.equal("1969-06-01").before(defaultWait);
 
     },
 
@@ -44,7 +44,7 @@ module.exports = {
         client.click(textInputSelector);
         client.expect.element(topLeftDaySelector).to.be.present.before(defaultWait);
         client.click(topLeftDaySelector);
-        client.expect.element(textInputSelector).value.to.equal("1969/06/29").before(defaultWait);
+        client.expect.element(textInputSelector).value.to.equal("1969-06-29").before(defaultWait);
         client.end();
     },
 
@@ -55,7 +55,7 @@ module.exports = {
         client.sendKeys(textInputSelector, "1980-01-01");
         client.expect.element(topLeftDaySelector).to.be.present.before(defaultWait);
         client.click(topLeftDaySelector);
-        client.expect.element(textInputSelector).value.to.equal("1969/06/29").before(defaultWait);
+        client.expect.element(textInputSelector).value.to.equal("1969-06-29").before(defaultWait);
         client.end();
     },
 
@@ -72,7 +72,7 @@ module.exports = {
 
         // now we click on another value, to make sure the input is updated
         client.click(topLeftDaySelector);
-        client.expect.element(textInputSelector).value.to.equal("1979/12/30").before(defaultWait);
+        client.expect.element(textInputSelector).value.to.equal("1979-12-30").before(defaultWait);
         client.expect.element("h1").text.to.equal("Dec 30, 1979");
         client.end();
     },
@@ -98,7 +98,7 @@ module.exports = {
         client.expect.element(errorMsgSelector).to.be.present.before(defaultWait);
         client.expect.element(errorMsgSelector).text.to.contain("Parser error: Expected a date only").before(defaultWait);
         client.click(topLeftDaySelector);
-        client.expect.element(textInputSelector).value.to.equal("1969/06/29").before(defaultWait);
+        client.expect.element(textInputSelector).value.to.equal("1969-06-29").before(defaultWait);
         client.expect.element(errorMsgSelector).to.not.be.present.before(defaultWait);
         client.end();
     },
@@ -112,7 +112,7 @@ module.exports = {
         client.expect.element(errorMsgSelector).to.be.present.before(defaultWait);
         client.expect.element(errorMsgSelector).text.to.contain("Date disabled: 1980-01-02").before(defaultWait);
         client.click(topLeftDaySelector);
-        client.expect.element(textInputSelector).value.to.equal("1969/06/29").before(defaultWait);
+        client.expect.element(textInputSelector).value.to.equal("1969-06-29").before(defaultWait);
         client.expect.element(errorMsgSelector).to.not.be.present.before(defaultWait);
         client.end();
     },
@@ -127,7 +127,7 @@ module.exports = {
         client.click(openBtn);
         client.expect.element(topLeftDaySelector).to.be.present.before(defaultWait);
         client.click(topLeftDaySelector);
-        client.expect.element(textInputSelector).value.to.equal("1969/06/29").before(defaultWait);
+        client.expect.element(textInputSelector).value.to.equal("1969-06-29").before(defaultWait);
         client.expect.element(errorMsgSelector).to.not.be.present.before(defaultWait);
         client.end();
     },
