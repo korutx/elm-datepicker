@@ -1,7 +1,7 @@
 module DatePicker exposing
     ( Msg, DateEvent(..), InputError(..), DatePicker
-    , init, initFromDate, initFromDates, update, view, isOpen, focusedDate
-    , Settings, defaultSettings, getInitialDate, pick, between, moreOrLess, from, to, off, open, close
+    , init, initFromDate, initFromDates, update, view, isOpen, focusedDate, getInitialDate
+    , Settings, defaultSettings, pick, between, moreOrLess, from, to, off, open, close
     )
 
 {-| A customizable date picker component.
@@ -109,7 +109,7 @@ defaultSettings =
         ]
     , isDisabled = always False
     , parser = Date.fromIsoString
-    , dateFormatter = Date.format "yyyy/MM/dd"
+    , dateFormatter = Date.format "yyyy-MM-dd"
     , dayFormatter = formatDay
     , monthFormatter = formatMonth
     , yearFormatter = String.fromInt
@@ -279,6 +279,7 @@ isOpen (DatePicker model) =
 focusedDate : DatePicker -> Maybe Date
 focusedDate (DatePicker model) =
     model.focused
+
 
 {-| Expose the initial date
 
