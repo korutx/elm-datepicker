@@ -560,11 +560,40 @@ datePicker pickedDate settings ({ focused, today } as model) =
                 [ text <| String.fromInt selectedYear ]
             )
 
+        ( addedYearsFront, addedYearsBack ) =
+            let
+                front to_ =
+                    List.range (year currentMonth) to_
+
+                back from_ =
+                    List.range from_ (year currentMonth)
+            in
+            case settings.changeYear of
+                From from_ ->
+                    ( front (from_ - 1), back (year today + 1) )
+
+                To to_ ->
+                    ( front (year today - 1), back (to_ + 1) )
+
+                Between from_ to_ ->
+                    ( front (from_ - 1), back (to_ + 1) )
+
+                MoreOrLess y ->
+                    ( [], [] )
+
+                Off ->
+                    ( [], [] )
+
         dropdownYear =
             Html.Keyed.node "select"
                 [ onChange (changeYear currentDate >> ChangeFocus), dpClass "year-menu" ]
                 (List.indexedMap yearOption
-                    (yearRange { currentMonth = currentMonth, today = today } settings.changeYear)
+                    (List.concat
+                        [ addedYearsFront
+                        , yearRange { currentMonth = currentMonth, today = today } settings.changeYear
+                        , addedYearsBack
+                        ]
+                    )
                 )
     in
     div
