@@ -377,8 +377,7 @@ update settings msg (DatePicker ({ forceOpen, focused } as model)) =
                                                 Picked date
 
                                         Err e ->
-
-                                                FailedInput <| Invalid e
+                                            FailedInput <| Invalid e
                     in
                     ( DatePicker
                         { model
