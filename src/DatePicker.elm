@@ -360,11 +360,14 @@ update settings msg (DatePicker ({ forceOpen, focused } as model)) =
                 False ->
                     let
                         dateEvent =
-                            case Maybe.withDefault "" model.inputText of
-                                "" ->
-                                    FailedInput <| EmptyString
+                            case model.inputText of
+                                Nothing ->
+                                    FailedInput EmptyString
 
-                                rawInput ->
+                                Just "" ->
+                                    FailedInput EmptyString
+
+                                Just rawInput ->
                                     case settings.parser rawInput of
                                         Ok date ->
                                             if settings.isDisabled date then
