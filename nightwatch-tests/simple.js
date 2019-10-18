@@ -104,7 +104,7 @@ module.exports = {
       client.expect.element(errorMsgSelector).to.be.present.before(defaultWait);
       client.expect.element(errorMsgSelector).text.to.contain("Empty string").before(defaultWait);
       client.click(topLeftDaySelector);
-      client.expect.element(textInputSelector).value.to.equal("1969/06/29").before(defaultWait);
+      client.expect.element(textInputSelector).value.to.equal("1969-06-29").before(defaultWait);
       client.expect.element(errorMsgSelector).to.not.be.present.before(defaultWait);
       client.end();
   },
