@@ -73,6 +73,9 @@ update msg ({ date, datePicker } as model) =
                         FailedInput (Disabled d) ->
                             Just <| "Date disabled: " ++ Date.toIsoString d
 
+                        FailedInput EmptyString ->
+                            Just "Empty string error"
+
                         Picked _ ->
                             Nothing
 

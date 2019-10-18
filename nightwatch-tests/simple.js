@@ -89,6 +89,26 @@ module.exports = {
         client.end();
     },
 
+    'Manually entered empty date strings should be interceptable' : function (client) {
+      client.url(url);
+      client.expect.element(textInputSelector).to.be.present.before(defaultWait);
+      client.click(textInputSelector);
+
+      // enter twice to trigger change event for empty string
+      client.sendKeys(textInputSelector, "x");
+      client.sendKeys(textInputSelector, client.Keys.ENTER);
+      client.expect.element(errorMsgSelector).to.be.present.before(defaultWait);
+      client.expect.element(errorMsgSelector).text.to.contain("Parser error: Expected a date in ISO 8601 format").before(defaultWait);
+      client.sendKeys(textInputSelector, client.Keys.BACK_SPACE);
+      client.sendKeys(textInputSelector, client.Keys.ENTER);
+      client.expect.element(errorMsgSelector).to.be.present.before(defaultWait);
+      client.expect.element(errorMsgSelector).text.to.contain("Empty string").before(defaultWait);
+      client.click(topLeftDaySelector);
+      client.expect.element(textInputSelector).value.to.equal("1969/06/29").before(defaultWait);
+      client.expect.element(errorMsgSelector).to.not.be.present.before(defaultWait);
+      client.end();
+  },
+
     'Manually entered invalid dates should be interceptable' : function (client) {
         client.url(url);
         client.expect.element(textInputSelector).to.be.present.before(defaultWait);

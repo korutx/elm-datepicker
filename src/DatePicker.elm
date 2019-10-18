@@ -323,6 +323,7 @@ type DateEvent
 -}
 type InputError
     = Invalid String
+    | EmptyString
     | Disabled Date
 
 
@@ -359,16 +360,24 @@ update settings msg (DatePicker ({ forceOpen, focused } as model)) =
                 False ->
                     let
                         dateEvent =
-                            case settings.parser <| Maybe.withDefault "" model.inputText of
-                                Ok date ->
-                                    if settings.isDisabled date then
-                                        FailedInput <| Disabled date
+                            case model.inputText of
+                                Nothing ->
+                                    FailedInput EmptyString
 
-                                    else
-                                        Picked date
+                                Just "" ->
+                                    FailedInput EmptyString
 
-                                Err e ->
-                                    FailedInput <| Invalid e
+                                Just rawInput ->
+                                    case settings.parser rawInput of
+                                        Ok date ->
+                                            if settings.isDisabled date then
+                                                FailedInput <| Disabled date
+
+                                            else
+                                                Picked date
+
+                                        Err e ->
+                                            FailedInput <| Invalid e
                     in
                     ( DatePicker
                         { model
