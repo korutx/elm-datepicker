@@ -33,6 +33,15 @@ As this change in emitted html needs a change in css, we recommend you to add th
 .elm-datepicker--next { background-color: inherit; }
 ```
 
+### Upgrading to 4.0.0
+
+4.0.0 introduces one further `InputError` variant: `EmptyString`. This is usefull to detect empty inputs especially in cases where the user wants to delete the date. (see [issue #26](https://github.com/CurrySoftware/elm-datepicker/issues/26) for details)
+
+Also, the default formatter was changed to match the default parser: The default date format is now "yyyy-MM-dd".
+(see [issue #20](https://github.com/CurrySoftware/elm-datepicker/issues/20) for details)
+
+A huge thanks to John Landis for these contributions.
+
 ## Install
 
 ``` shell

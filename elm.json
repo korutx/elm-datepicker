@@ -3,7 +3,7 @@
     "name": "CurrySoftware/elm-datepicker",
     "summary": "A reusable date picker component",
     "license": "BSD-3-Clause",
-    "version": "3.1.0",
+    "version": "4.0.0",
     "exposed-modules": [
         "DatePicker"
     ],
