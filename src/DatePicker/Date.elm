@@ -1,11 +1,16 @@
 module DatePicker.Date exposing
     ( YearRange(..)
+    , Period(..)
     , changeYear
     , formatDay
     , formatMonth
     , initDate
     , weekdayToInterval
     , yearRange
+    , prevPeriod
+    , nextPeriod
+    , months
+    , es
     )
 
 import Date exposing (Date, Interval(..), Unit(..), day, month, year)
@@ -26,6 +31,11 @@ type YearRange
     | Between Year Year
     | From Year
     | To Year
+    
+type Period 
+    = Month
+    | Year
+    | Decade
 
 
 initDate : Date
@@ -98,6 +108,10 @@ formatMonth month =
             "December"
 
 
+months: List Month
+months =
+    [ Jan, Feb, Mar, Apr, May, Jun, Jul, Aug, Sep, Oct, Nov, Dec ]
+
 weekdayToInterval : Weekday -> Date.Interval
 weekdayToInterval weekday =
     case weekday of
@@ -151,3 +165,98 @@ yearRange { currentMonth, today } range =
 
         Off ->
             []
+            
+prevPeriod : Period -> Period
+prevPeriod period =
+
+    case period of
+        
+        Month -> Year
+        
+        Year -> Decade
+        
+        _ -> period
+        
+nextPeriod : Period -> Period
+nextPeriod period =
+
+    case period of
+    
+        Decade -> Year
+        
+        Year -> Month
+        
+        _ -> period      
+        
+es : Date.Language
+es =
+    { monthName = monthToNameEs
+    , monthNameShort = monthToNameEs >> String.left 3
+    , weekdayName = weekdayToNameEs
+    , weekdayNameShort = weekdayToNameEs >> String.left 3
+    , dayWithSuffix = \_ -> ""
+    }
+    
+monthToNameEs : Month -> String
+monthToNameEs m =
+    case m of
+        Jan ->
+            "enero"
+
+        Feb ->
+            "febrero"
+
+        Mar ->
+            "marzo"
+
+        Apr ->
+            "abril"
+
+        May ->
+            "mayo"
+
+        Jun ->
+            "junio"
+
+        Jul ->
+            "julio"
+
+        Aug ->
+            "agosto"
+
+        Sep ->
+            "septiembre"
+
+        Oct ->
+            "octubre"
+
+        Nov ->
+            "noviembre"
+
+        Dec ->
+            "diciembre"
+            
+weekdayToNameEs : Weekday -> String
+weekdayToNameEs wd =
+    case wd of
+        Mon ->
+            "Lunes"
+
+        Tue ->
+            "Martes"
+
+        Wed ->
+            "Miércoles"
+
+        Thu ->
+            "Jueves"
+
+        Fri ->
+            "Viernes"
+
+        Sat ->
+            "Sábado"
+
+        Sun ->
+            "Domingo"
+    

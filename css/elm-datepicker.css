@@ -7,12 +7,14 @@
 .elm-datepicker--picker {
   position: absolute;
   border: 1px solid #CCC;
-  z-index: 10;
-  background-color: white; }
-
-.elm-datepicker--picker-header,
-.elm-datepicker--weekdays {
-  background: #F2F2F2; }
+  width: 250px;
+  padding: 4px;
+  margin-top: 1px;
+  z-index: 99999 !important;
+  font-size: 13px;
+  background: #fff;
+  -webkit-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); }
 
 .elm-datepicker--picker-header {
   display: flex;
@@ -28,50 +30,51 @@
   padding: 0.5em;
   display: flex;
   flex-direction: column; }
+  .elm-datepicker--month-container:hover {
+    background-color: #EEE; }
 
 .elm-datepicker--month,
 .elm-datepicker--year {
-  flex: 1 1 auto;
-  cursor: default;
-  text-align: center; }
+  text-align: center;
+  height: 50px;
+  width: 25%;
+  cursor: pointer; }
+  .elm-datepicker--month:hover,
+  .elm-datepicker--year:hover {
+    background-color: #EEE; }
 
 .elm-datepicker--year {
   font-size: 0.6em;
   font-weight: 700; }
 
-.elm-datepicker--prev,
-.elm-datepicker--next {
-  border: 6px solid transparent;
-  background-color: inherit;
-  display: block;
-  width: 0;
-  height: 0;
-  padding: 0 0.2em; }
-
-.elm-datepicker--prev {
-  border-right-color: #AAA; }
-  .elm-datepicker--prev:hover {
-    border-right-color: #BBB; }
-
-.elm-datepicker--next {
-  border-left-color: #AAA; }
-  .elm-datepicker--next:hover {
-    border-left-color: #BBB; }
-
 .elm-datepicker--table {
   border-spacing: 0;
   border-collapse: collapse;
-  font-size: 0.8em; }
-  .elm-datepicker--table td {
-    width: 2em;
-    height: 2em;
-    text-align: center; }
-
-.elm-datepicker--row {
-  border-top: 1px solid #F2F2F2; }
+  width: 100%;
+  font-size: 13px;
+  margin: 0; }
+  .elm-datepicker--table thead tr:first-child th {
+    cursor: pointer; }
+    .elm-datepicker--table thead tr:first-child th:hover {
+      background-color: #EEE; }
+  .elm-datepicker--table thead tr th {
+    border-bottom: 1px solid #f9f9f9; }
+    .elm-datepicker--table thead tr th.elm-datepicker--switch {
+      width: 100px; }
+    .elm-datepicker--table thead tr th.elm-datepicker--prev, .elm-datepicker--table thead tr th.elm-datepicker--next {
+      font-size: 21px;
+      vertical-align: top; }
+  .elm-datepicker--table td, .elm-datepicker--table th {
+    text-align: center;
+    height: 28px; }
+  .elm-datepicker--table td.elm-datepicker--month, .elm-datepicker--table td .elm-datepicker--year {
+    height: 50px;
+    width: 25%;
+    cursor: pointer; }
 
 .elm-datepicker--dow {
-  border-bottom: 1px solid #CCC;
+  width: 14.2857%;
+  border-bottom: none;
   cursor: default; }
 
 .elm-datepicker--day {
@@ -85,14 +88,23 @@
   .elm-datepicker--disabled:hover {
     background: inherit; }
 
-.elm-datepicker--picked {
-  color: white;
-  background: darkblue; }
-  .elm-datepicker--picked:hover {
-    background: darkblue; }
+.elm-datepicker--active {
+  background-color: #428bca;
+  color: #fff; }
+  .elm-datepicker--active:hover {
+    background: #428bca; }
 
 .elm-datepicker--today {
-  font-weight: bold; }
+  position: relative; }
+  .elm-datepicker--today:before {
+    content: "";
+    display: inline-block;
+    border-left: 7px solid transparent;
+    border-bottom: 7px solid #428bca;
+    border-top-color: rgba(0, 0, 0, 0.2);
+    position: absolute;
+    bottom: 4px;
+    right: 4px; }
 
 .elm-datepicker--other-month {
   color: #AAA; }
@@ -100,3 +112,5 @@
     color: #EEE; }
   .elm-datepicker--other-month.elm-datepicker--picked {
     color: white; }
+
+/*# sourceMappingURL=elm-datepicker.css.map */

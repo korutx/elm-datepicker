@@ -1,5 +1,5 @@
 module DatePicker exposing
-    ( Msg, DateEvent(..), InputError(..), DatePicker
+    ( Msg, DateEvent(..), InputError(..), DatePicker(..)
     , init, initFromDate, initFromDates, update, view, isOpen, focusedDate, getInitialDate
     , Settings, defaultSettings, pick, between, moreOrLess, from, to, off, open, close
     )
@@ -19,10 +19,11 @@ module DatePicker exposing
 
 -}
 
-import Date exposing (Date, Month, day, month, year)
+import Date exposing (Date, day, month, year)
+import Time exposing ( Month(..) )
 import DatePicker.Date exposing (..)
 import Html exposing (..)
-import Html.Attributes as Attrs exposing (placeholder, selected, tabindex, type_, value)
+import Html.Attributes as Attrs exposing (placeholder, selected, tabindex, type_, value, colspan, classList)
 import Html.Events exposing (on, onBlur, onClick, onFocus, onInput, targetValue)
 import Html.Keyed
 import Json.Decode as Json
@@ -35,6 +36,8 @@ import Time exposing (Weekday(..))
 type Msg
     = CurrentDate Date
     | ChangeFocus Date
+    | ChangeFocusAndPeriod Date
+    | ChangePeriod Period
     | Pick Date
     | Text String
     | SubmitText
@@ -70,8 +73,10 @@ type alias Model =
     { open : Bool
     , forceOpen : Bool
     , focused : Maybe Date -- date currently center-focused by picker, but not necessarily chosen
+    , period : Period -- date currently center-focused by picker, but not necessarily chosen
     , inputText : Maybe String
     , today : Date -- actual, current day as far as we know
+    -- , period : Period
     }
 
 
@@ -201,6 +206,7 @@ init =
         { open = False
         , forceOpen = False
         , focused = Just initDate
+        , period = Month
         , inputText = Nothing
         , today = initDate
         }
@@ -220,6 +226,7 @@ initFromDate date =
         { open = False
         , forceOpen = False
         , focused = Just date
+        , period = Month
         , inputText = Nothing
         , today = date
         }
@@ -237,6 +244,7 @@ initFromDates today date =
         { open = False
         , forceOpen = False
         , focused = date
+        , period = Month
         , inputText = Nothing
         , today = today
         }
@@ -333,12 +341,19 @@ date.
 update : Settings -> Msg -> DatePicker -> ( DatePicker, DateEvent )
 update settings msg (DatePicker ({ forceOpen, focused } as model)) =
     case msg of
+    
         CurrentDate date ->
             ( DatePicker { model | focused = Just date, today = date }, None )
 
+        ChangeFocusAndPeriod date ->
+            ( DatePicker { model | focused = Just date, period = nextPeriod model.period }, None )
+            
         ChangeFocus date ->
             ( DatePicker { model | focused = Just date }, None )
-
+            
+        ChangePeriod period ->
+            ( DatePicker { model | period = period }, None )
+            
         Pick date ->
             ( DatePicker <|
                 { model
@@ -517,14 +532,21 @@ view pickedDate settings (DatePicker (model as datepicker)) =
 datePicker : Maybe Date -> Settings -> Model -> Html Msg
 datePicker pickedDate settings ({ focused, today } as model) =
     let
+        
+        pickedDateOrToday = pickedDate |> Maybe.withDefault today
+        
         currentDate =
-            focused |> maybeOr pickedDate |> Maybe.withDefault today
+            focused |> Maybe.withDefault pickedDateOrToday
 
+    
         { currentMonth, currentDates } =
             prepareDates currentDate settings.firstDayOfWeek
 
         dpClass =
             mkClass settings
+            
+        dpClassList =
+            mkClassList settings
 
         firstDayOffset =
             Date.weekdayToNumber settings.firstDayOfWeek - 1
@@ -610,38 +632,200 @@ datePicker pickedDate settings ({ focused, today } as model) =
         , Html.Events.stopPropagationOn "mousedown" <| Json.succeed ( MouseDown, True )
         , Html.Events.stopPropagationOn "mouseup" <| Json.succeed ( MouseUp, True )
         ]
-        [ div [ dpClass "picker-header" ]
-            [ div [ dpClass "prev-container" ]
-                [ arrow "prev" (ChangeFocus (Date.add Date.Months -1 currentDate)) ]
-            , div [ dpClass "month-container" ]
-                [ span [ dpClass "month" ]
-                    [ text <| settings.monthFormatter <| month currentMonth ]
-                , span [ dpClass "year" ]
-                    [ if not (yearRangeActive settings.changeYear) then
-                        text <| settings.yearFormatter <| year currentMonth
-
-                      else
-                        Html.Keyed.node "span" [] [ ( String.fromInt (year currentMonth), dropdownYear ) ]
+        [ case model.period of 
+            Month ->
+                div [ dpClass "days" ]
+                    [ table [ dpClass "table" ]
+                        [ thead [ dpClass "weekdays" ]
+                            [ tr []
+                                [ th 
+                                    [ dpClass "prev"
+                                    , onClick 
+                                        <| ChangeFocus 
+                                        <| Date.add Date.Months -1 currentDate
+                                    ]
+                                    [ text "‹" ]
+                                , th 
+                                    [ dpClass "switch", colspan 5, onClick ( ChangePeriod <| prevPeriod model.period ) ]
+                                    [ text <| settings.monthFormatter <| month currentDate 
+                                    , text " "
+                                    , text <| settings.yearFormatter <| year currentDate 
+                                    ]
+                                , th 
+                                    [ dpClass "next"
+                                    , onClick 
+                                        <| ChangeFocus 
+                                        <| Date.add Date.Months 1 currentDate
+                                    ]
+                                    [ text "›"]
+                                ]
+                            , tr []
+                                ([ Mon, Tue, Wed, Thu, Fri, Sat, Sun ]
+                                    |> List.repeat 2
+                                    |> List.concat
+                                    |> List.drop firstDayOffset
+                                    |> List.take 7
+                                    |> List.map (\d -> td [ dpClass "dow" ] [ text <| settings.dayFormatter d ])
+                                )
+                            ]
+                        , tbody [ dpClass "days" ] dayList
+                        ]
                     ]
-                ]
-            , div [ dpClass "next-container" ]
-                [ arrow "next" (ChangeFocus (Date.add Date.Months 1 currentDate)) ]
-            ]
-        , table [ dpClass "table" ]
-            [ thead [ dpClass "weekdays" ]
-                [ tr []
-                    ([ Mon, Tue, Wed, Thu, Fri, Sat, Sun ]
-                        |> List.repeat 2
-                        |> List.concat
-                        |> List.drop firstDayOffset
-                        |> List.take 7
-                        |> List.map (\d -> td [ dpClass "dow" ] [ text <| settings.dayFormatter d ])
-                    )
-                ]
-            , tbody [ dpClass "days" ] dayList
-            ]
+            
+            Year ->
+                let 
+                    quarters = 
+                        [ [ Jan, Feb, Mar, Apr ]
+                        , [ May, Jun, Jul, Aug ]
+                        , [ Sep, Oct, Nov, Dec ]
+                        ]
+                in
+                div [ dpClass "years" ]
+                    [ table [ dpClass "table" ]
+                        [ thead []
+                            [ tr []
+                                [ th 
+                                    [ dpClass "prev"
+                                    , onClick 
+                                        <| ChangeFocus 
+                                        <| Date.add Date.Years -1 currentDate
+                                    ]
+                                    [ text "‹" ]
+                                , th [ dpClass "switch", colspan 5, onClick ( ChangePeriod <| prevPeriod model.period ) ]
+                                    [ text <| settings.yearFormatter <| year currentDate 
+                                    ]
+                                , th 
+                                    [ dpClass "next"
+                                    , onClick 
+                                        <| ChangeFocus 
+                                        <| Date.add Date.Years 1 currentDate]
+                                    [ text "›"]
+                                ]
+                            ]
+                        ]
+                    , table [ dpClass "table" ]
+                        [ tbody [ dpClass "days" ]
+                            <| List.map 
+                                ( \quarter -> 
+                                    tr []
+                                        <| List.map 
+                                            ( \m -> 
+                                                td [ dpClass "month"
+                                                   , dpClassList [( "active",  month pickedDateOrToday == m )]
+                                                  , onClick 
+                                                        <| ChangeFocusAndPeriod
+                                                        <| Date.fromCalendarDate ( year currentDate ) m 1
+                                                   ]
+                                                   [ text <| es.monthNameShort m ]
+                                            )
+                                            quarter
+                                ) 
+                                quarters
+                        ]
+                    ]
+            Decade ->
+                let 
+                    decadeStart = year currentDate // 10  * 10
+                    decadeEnd = decadeStart + 10
+                    decade = List.range ( decadeStart - 1 ) decadeEnd
+                        |> List.map ( \y -> Date.fromCalendarDate y ( month currentDate ) 1 )
+                        |> groupQuarters
+                in
+                div [ dpClass "years" ]
+                    [ table [ dpClass "table" ]
+                        [ thead []
+                            [ tr []
+                                [ th 
+                                    [ dpClass "prev" 
+                                    , onClick 
+                                        <| ChangeFocus 
+                                        <| Date.add Date.Years -10 currentDate
+                                    ]
+                                    [ text "‹" ]
+                                , th [ dpClass "switch", colspan 5, onClick ( ChangePeriod <| prevPeriod model.period ) ]
+                                    [ text <| String.fromInt decadeStart
+                                    , text " - "
+                                    , text <| String.fromInt decadeEnd
+                                    ]
+                                , th 
+                                    [ dpClass "next" 
+                                    , onClick 
+                                        <| ChangeFocus 
+                                        <| Date.add Date.Years 10 currentDate
+                                    ]
+                                    [ text "›"]
+                                ]
+                            ]
+                        ]
+                    , table [ dpClass "table" ]
+                        [ tbody [ dpClass "days" ]
+                            <| List.map 
+                                ( \quarter -> 
+                                    tr []
+                                        <| List.map 
+                                            ( \d -> 
+                                                td [ dpClass "month"
+                                                   , dpClassList [( "active",  year d == year currentDate )]
+                                                  , onClick 
+                                                        <| ChangeFocusAndPeriod
+                                                        <| Date.fromCalendarDate ( year d ) ( month d ) ( day d )
+                                                   ]
+                                                   [ text <| settings.yearFormatter <| year d ]
+                                            )
+                                            quarter
+                                ) 
+                                decade
+                        ]
+                    ]
         ]
+        
+        
+        -- div []
+        --     [ div [ dpClass "picker-header" ]
+        --         [ div [ dpClass "prev-container" ]
+        --             [ arrow "prev" ( ChangeFocus ( Date.add Date.Months -1 currentDate ) ) ]
+        --         , a [ dpClass "month-container", onClick ( ChangeFocus1 <| prevPeriod currentPeriod ) ]
+        --             [ case model.focused1 of 
+        --                 Just ( DatePicker.Date.Month m ) -> 
+        --                     span [ dpClass "month" ]
+        --                         [ text <| settings.monthFormatter <| month m 
+        --                         , text " "
+        --                         , text <| settings.yearFormatter <| year m 
+        --                         ]
+        --                 Just ( DatePicker.Date.Year currentYear ) ->
+        --                     span [ dpClass "month" ]
+        --                         [ text <| settings.yearFormatter <| currentYear ]
+                        
+        --                 _ -> span [][]
+        --             -- , span [ dpClass "year" ]
+        --             --     [ if not (yearRangeActive settings.changeYear) then
+        --             --         text <| settings.yearFormatter <| year currentMonth
+    
+        --             --       else
+        --             --         Html.Keyed.node "span" [] [ ( String.fromInt (year currentMonth), dropdownYear ) ]
+        --             --     ]
+        --             ]
+        --         , div [ dpClass "next-container" ]
+        --             [ arrow "next" (ChangeFocus (Date.add Date.Months 1 currentDate)) ]
+        --         ]
+        --     ]
+        -- ]
 
+-- viewMonth : Html Msg
+-- viewMonth =
+--     table [ dpClass "table" ]
+--         [ thead [ dpClass "weekdays" ]
+--             [ tr []
+--                 ([ Mon, Tue, Wed, Thu, Fri, Sat, Sun ]
+--                     |> List.repeat 2
+--                     |> List.concat
+--                     |> List.drop firstDayOffset
+--                     |> List.take 7
+--                     |> List.map (\d -> td [ dpClass "dow" ] [ text <| settings.dayFormatter d ])
+--                 )
+--             ]
+--         , tbody [ dpClass "days" ] dayList
+--         ]
 
 viewDay : Settings -> (Date -> Bool) -> (Date -> Bool) -> (Date -> Bool) -> Date -> Html Msg
 viewDay settings picked isOtherMonth isToday d =
@@ -663,7 +847,7 @@ viewDay settings picked isOtherMonth isToday d =
         ([ classList
             [ ( "day", True )
             , ( "disabled", disabled )
-            , ( "picked", picked d )
+            , ( "active", picked d )
             , ( "today", isToday d )
             , ( "other-month", isOtherMonth d )
             ]
@@ -686,6 +870,23 @@ groupDates dates =
 
                 x :: xxs ->
                     if i == 6 then
+                        go 0 xxs [] (List.reverse (x :: racc) :: acc)
+
+                    else
+                        go (i + 1) xxs (x :: racc) acc
+    in
+    go 0 dates [] []
+    
+groupQuarters : List Date -> List ( List Date )
+groupQuarters dates =
+    let
+        go i xs racc acc =
+            case xs of
+                [] ->
+                    List.reverse acc
+
+                x :: xxs ->
+                    if i == 3 then
                         go 0 xxs [] (List.reverse (x :: racc) :: acc)
 
                     else

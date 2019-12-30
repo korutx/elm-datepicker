@@ -22,7 +22,7 @@ settings datePicker =
     let
         isDisabled : Date -> Date -> Bool
         isDisabled today date =
-            compare today date /= LT
+            Date.compare today date /= LT
     in
     { defaultSettings | isDisabled = isDisabled (getInitialDate datePicker) }
 

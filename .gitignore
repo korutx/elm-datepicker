@@ -1,7 +1,18 @@
-/elm-stuff
-/elm.js
-/.idea
-/node_modules
+# Distribution
+build/
 
-#nightwatch reports
-/reports
+# elm-package generated files
+elm-stuff
+
+# elm-repl generated files
+repl-temp-*
+
+# Dependency directories
+node_modules
+node-services/node_modules
+
+# Desktop Services Store on macOS
+.DS_Store
+
+bootstrap.js
+.sass-cache
