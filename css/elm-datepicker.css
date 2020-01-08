@@ -114,3 +114,29 @@
     color: white; }
 
 /*# sourceMappingURL=elm-datepicker.css.map */
+
+.zmdiCalendarNoteCustomDate {
+  bottom: 1.20rem;
+  pointer-events: none;
+}
+.zmdiCloseClearDate {  
+  bottom: 1.3rem; 
+  cursor: pointer;
+}
+.elm-datepicker--container > i.zmdi-calendar-note, i.zmdi-close  {
+  width: 14px;
+  font-size: 14px;
+  text-align: center!important;
+  right: 5px;
+  color: #707070;
+  float: right;
+  position: relative;
+  white-space: nowrap; /* texto por debajo*/
+}
+.elm-datepicker--container > i.zmdi-close:hover {
+  background: #FAF8F8!important;
+  border-radius: 100%;
+}
+.hidden{
+  display: none;
+}
