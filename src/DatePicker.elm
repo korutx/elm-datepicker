@@ -23,7 +23,7 @@ import Date exposing (Date, day, month, year)
 import Time exposing ( Month(..) )
 import DatePicker.Date exposing (..)
 import Html exposing (..)
-import Html.Attributes as Attrs exposing (placeholder, selected, tabindex, type_, value, colspan, classList)
+import Html.Attributes as Attrs exposing (placeholder, selected, tabindex, type_, value, colspan, classList, class)
 import Html.Events exposing (on, onBlur, onClick, onFocus, onInput, targetValue)
 import Html.Keyed
 import Json.Decode as Json
@@ -45,6 +45,7 @@ type Msg
     | Blur
     | MouseDown
     | MouseUp
+    | ClearDate
 
 
 {-| The type of date picker settings.
@@ -321,6 +322,7 @@ type DateEvent
     = None
     | FailedInput InputError
     | Picked Date
+    | Clear
 
 
 {-| When typing a date it can go wrong in two ways:
@@ -425,6 +427,9 @@ update settings msg (DatePicker ({ forceOpen, focused } as model)) =
 
         MouseUp ->
             ( DatePicker { model | forceOpen = False }, None )
+        
+        ClearDate ->
+            ( DatePicker { model | open = forceOpen }, Clear )
 
 
 {-| Generate a message that will act as if the user has chosen a certain date,
@@ -517,10 +522,28 @@ view pickedDate settings (DatePicker (model as datepicker)) =
 
         containerClassList =
             ( settings.classNamespace ++ "container", True ) :: settings.containerClassList
+        
+        showHide =
+            case pickedDate of
+                Nothing ->
+                    "zmdiCalendarNoteCustomDate"              
+                _ ->
+                    "hidden"
+
+        hideShow =
+            case pickedDate of
+                Nothing ->
+                    "hidden"
+                _ ->
+                    "zmdiCloseClearDate"
     in
     div
         [ Attrs.classList containerClassList ]
         [ dateInput
+        , i [ class ("zmdi zmdi-calendar-note zmdi-hc-lg zmdi-custom-date p-0 m-0 fs-2-3rem " ++ showHide) 
+            , onClick Focus ] []
+        , i [ class ("zmdi zmdi-close fs-2-1rem zmdi-clear-date p-0 m-0 " ++ hideShow)
+            , onClick ClearDate ] []
         , if model.open then
             datePicker pickedDate settings model
 
