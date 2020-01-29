@@ -23,7 +23,7 @@ import Date exposing (Date, day, month, year)
 import Time exposing ( Month(..) )
 import DatePicker.Date exposing (..)
 import Html exposing (..)
-import Html.Attributes as Attrs exposing (placeholder, selected, tabindex, type_, value, colspan, classList)
+import Html.Attributes as Attrs exposing (placeholder, selected, tabindex, type_, value, colspan, classList, autocomplete)
 import Html.Events exposing (on, onBlur, onClick, onFocus, onInput, targetValue)
 import Html.Keyed
 import Json.Decode as Json
@@ -497,6 +497,7 @@ view pickedDate settings (DatePicker (model as datepicker)) =
                  , onBlur Blur
                  , onClick Focus
                  , onFocus Focus
+                 , autocomplete False
                  ]
                     ++ settings.inputAttributes
                     ++ potentialInputId
